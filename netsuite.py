@@ -11,8 +11,11 @@ class Netsuite(object):
     SEARCH_URL = ('https://rest.netsuite.com/app/site/hosting/restlet.nl'
                   '?script=7&deploy=1')
 
+    CHANGE_STATUS_URL = ('https://rest.netsuite.com/app/site/hosting/restlet.nl'
+                '?script=15&deploy=1')
+
     TRANSFORM_URL = ('https://rest.netsuite.com/app/site/hosting/restlet.nl'
-                    '?script=16&deploy=1')
+                '?script=16&deploy=1')
 
 
     def __init__(self, email, password, account):
@@ -26,16 +29,21 @@ class Netsuite(object):
             'content-type': 'application/json',
         }
 
+        self.session = requests.Session()
+
     def _get(self, url, params):
-        r = requests.get(url, params=params, headers=self.headers)
+        r = self.session.get(url, params=params, headers=self.headers)
+        #r = requests.get(url, params=params, headers=self.headers)
         return json.loads(r.content)
 
     def _post(self, url, params):
-        r = requests.post(url, data=json.dumps(params), headers=self.headers)
+        r = self.session.post(url, data=json.dumps(params), headers=self.headers)
+        #r = requests.post(url, data=json.dumps(params), headers=self.headers)
         return json.loads(r.content)
 
     def _delete(self, url, recordtype, entity_id):
-        r = requests.delete(url, params={'recordtype': recordtype, 'id': entity_id}, headers=self.headers)
+        r = self.session.delete(url, params={'recordtype': recordtype, 'id': entity_id}, headers=self.headers)
+        #r = requests.delete(url, params={'recordtype': recordtype, 'id': entity_id}, headers=self.headers)
         return r.content
 
     def _put(self, url, params):
@@ -47,6 +55,15 @@ class Netsuite(object):
                                          salesorder_id,
                                          'itemfulfillment',
                                          line_items)
+
+        #return self._post(self.FULFILLMENT_URL, params)
+
+    def close_record(self, record_type, record_id):
+        params = {
+            'record_type': record_type,
+            'record_id': record_id,
+        }
+        return self._post(self.CHANGE_STATUS_URL, params)
 
     def create_child_record(self, source_type, source_id, dest_type, dest_data=None, delete_data=None):
         params = {

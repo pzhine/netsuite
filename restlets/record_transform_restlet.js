@@ -45,7 +45,6 @@ function saveTransformedRecord(datain)
         }       
     }
 
-    // Delete line items if they do not apply to this transformed record
     var to_delete = datain.delete_data;
     if (to_delete)
     {   

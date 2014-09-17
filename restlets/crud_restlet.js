@@ -18,6 +18,11 @@ function createRecord(datain)
     }   
 
     var record = nlapiCreateRecord(datain.recordtype);
+
+    if (datain.initialvalues) {
+        record = nlapiCreateRecord(datain.recordtype, datain.initialvalues);
+    }
+
     if (datain.id) {
         record = nlapiLoadRecord(datain.recordtype,datain.id);
     }
@@ -26,7 +31,7 @@ function createRecord(datain)
     {   
         if (datain.hasOwnProperty(fieldname))
         {   
-            if (fieldname != 'recordtype' && fieldname != 'id')
+            if (fieldname != 'recordtype' && fieldname != 'id' && fieldname != 'initialvalues')
             {   
                 var value = datain[fieldname];
                 if (value && typeof value != 'object') // ignore other type of parameters

@@ -12,6 +12,26 @@ function searchRecord(datain)
         }
     }
 
-    // Execute the search
-    return nlapiSearchRecord(datain.recordtype, null, filters, columns);
+    var SLICE_LIMIT = 500;
+    var search = nlapiCreateSearch(datain.recordtype, filters, columns);
+
+    var resultset = search.runSearch();
+
+    var results = [];
+    var index = 0;
+    do {
+        var subset = resultset.getResults(index, index+SLICE_LIMIT);
+        if (!subset) {
+            break;
+        }
+
+        subset.forEach(function(row) {
+            results.push(row);
+            index++;
+        });
+
+    } while (subset.length === SLICE_LIMIT);
+
+    return results;
+
 }
